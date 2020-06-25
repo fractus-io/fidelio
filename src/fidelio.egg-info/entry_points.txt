@@ -1,0 +1,3 @@
+[console_scripts]
+fidelio = fidelio.cli:main
+

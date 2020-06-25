@@ -15,9 +15,14 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import click
+from download_cve import download_cve
+from unzip import unzipJson
 
 
 @click.command()
-@click.argument('names', nargs=-1)
-def main(names):
-    click.echo(repr(names))
+@click.option('-d', '--download', 'year')
+def main(year):
+    download_cve(year)
+    big_list = unzipJson()
+    print(big_list)
+

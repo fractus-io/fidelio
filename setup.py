@@ -89,7 +89,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'fidelio = fidelio.cli:main',
+            'fidelio = fidelio.cli:main', 
         ]
     },
 )
