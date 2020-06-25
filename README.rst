@@ -26,7 +26,7 @@ Overview
 
 .. end-badges
 
-rom the National Vulnerabilities Database (NVD)
+An application for downloading and displaying Common Vulnerabilities and Exposures (CVE) from the National Vulnerabilities Database (NVD)
 
 Installation
 ============
