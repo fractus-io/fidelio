@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: fidelio
-Version: 0.1.dev2+dirty
+Version: 0.1.dev3
 Summary: rom the National Vulnerabilities Database (NVD)
 Home-page: https://github.com/filipStar/fidelio
 Author: Filip Starcevic
