@@ -24,5 +24,5 @@ from unzip import unzipJson
 def main(year):
     download_cve(year)
     big_list = unzipJson()
-    print(big_list)
+    print(big_list[0])
 
