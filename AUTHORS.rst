@@ -2,4 +2,5 @@
 Authors
 =======
 
-* Filip Starcevic - https://blog.ionelmc.ro
+* Filip Starcevic
+* Ivan Sakal
