@@ -1,11 +1,13 @@
 from os import listdir
 from os.path import isfile, join
 from zipfile import ZipFile
+import xml.etree.ElementTree as et
 import json
 
 
 # unzips CVEs and returns a list with information
 def unzipJson():
+    
     cve_list = []    
     files = [f for f in listdir("nvd/") if isfile(join("nvd/", f))]
     files.sort()

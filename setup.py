@@ -30,7 +30,7 @@ setup(
         'write_to': 'src/fidelio/_version.py',
         'fallback_version': '0.0.1',
     },
-    description='rom the National Vulnerabilities Database (NVD)',
+    description='An application for downloading and displaying Common Vulnerabilities and Exposures (CVE) from the National Vulnerabilities Database (NVD)',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
@@ -89,7 +89,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'fidelio = fidelio.cli:main', 
+            'fidelio = fidelio.cli:main',
         ]
     },
 )

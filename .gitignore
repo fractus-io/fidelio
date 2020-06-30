@@ -157,3 +157,7 @@ pip-selfcheck.json
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/venv,python,visualstudiocode
+
+### Downloaded files ###
+nvd/*
+cpe/*

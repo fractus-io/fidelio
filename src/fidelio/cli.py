@@ -20,9 +20,9 @@ from unzip import unzipJson
 
 
 @click.command()
-@click.option('-d', '--download', 'year')
-def main(year):
-    download_cve(year)
-    big_list = unzipJson()
-    print(big_list[0])
+@click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder')
+def main(download):
+    download_cve(download[0], download[1])
+    # big_list = unzipJson()
+    # # print(big_list[0])
 
