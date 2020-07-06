@@ -6,25 +6,27 @@ import os
 # Downloads CVE for given year, or all CVE
 def download_cve(source, year):
 
-    if source == 'cve' and (int(year) in range(2002,2021)):
+    if source == 'cve' and (year == 'all' or int(year) in range(2002,2021)):
         r = requests.get('https://nvd.nist.gov/vuln/data-feeds#JSON_FEED')
         # print(r.text)
         
+        try:
+            os.mkdir('nvd')
+            print("Directory nvd Created ") 
+        except FileExistsError:
+            print("Directory nvd already exists")  
+            
+
         file_link = "nvdcve-1.1-[0-9]*\.json\.zip" if year == 'all' else f"nvdcve-1.1-{year}\.json\.zip"
         for filename in re.findall(file_link, r.text):
             
             r_file = requests.get("https://nvd.nist.gov/feeds/json/cve/1.1/" + filename,
                                 stream=True)
-            try:
-                os.mkdir('nvd')
-                print("Directory nvd Created ") 
-            except FileExistsError:
-                print("Directory nvd already exists")  
-            print(f'Downloaded {filename}')
 
             with open(os.getcwd() + "/nvd/" + filename, 'wb') as f:
                 for chunk in r_file:
                     f.write(chunk)
+            print(f'Downloaded {filename}')
 
     elif source == 'cpe' and year == 'all':
         r = requests.get('https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.3.xml.zip')
