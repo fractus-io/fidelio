@@ -4,7 +4,7 @@ import os
 
 
 # Downloads CVE for given year, or all CVE
-def download_cve(source, year):
+def download_files(source, year):
 
     if source == 'cve' and (year == 'all' or int(year) in range(2002,2021)):
         r = requests.get('https://nvd.nist.gov/vuln/data-feeds#JSON_FEED')
