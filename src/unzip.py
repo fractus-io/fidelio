@@ -137,7 +137,7 @@ def parse_json():
                         "cvss_availability_impact": cvss_availability_impact,
                         "cvss_vector": cvss_vector,
                         "cwe_id": cwe_id,
-                        'vendor': cpe_version,
+                        'vendor': cpe_vendor,
                         'product': cpe_product,
                         'version': cpe_version
                     }
