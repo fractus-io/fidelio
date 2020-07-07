@@ -161,3 +161,7 @@ pip-selfcheck.json
 ### Downloaded files ###
 nvd/*
 cpe/*
+
+### Created csv files ###
+cve.csv
+cpe.csv

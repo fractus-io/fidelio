@@ -20,11 +20,15 @@ from unzip import *
 
 
 @click.command()
-@click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder')
+@click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder. You can also write "cve csv" or "cpe csv" to place the data in a csv file')
 def main(download):
-    download_files(download[0], download[1])
-    make_cve_csv()
-    print('added cve')
-    make_cpe_csv()
-    print('added cpe')
+    if download[1] != 'csv':
+        download_files(download[0], download[1])
+    
+    if download[0] == 'cve' and download[1] == 'csv':
+        make_cve_csv()
+        print('Added cve')
+    elif download[0] == 'cpe' and download[1] == 'csv':
+        make_cpe_csv()
+        print('Added cpe')
 
