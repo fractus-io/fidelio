@@ -90,6 +90,7 @@ def parse_json():
                             baseMetricV2 = impact.get("baseMetricV2")
 
                             cvss_base = baseMetricV2.get("cvssV2").get("baseScore")
+                            cvss_severity = baseMetricV2.get('severity')
                             cvss_impact = baseMetricV2.get("impactScore")
                             cvss_exploit = baseMetricV2.get("exploitabilityScore")
                             cvss_access_vector = baseMetricV2.get("cvssV2").get("accessVector")
@@ -101,8 +102,9 @@ def parse_json():
                             cvss_vector = baseMetricV2.get("cvssV2").get("vectorString")
                             cwe_id = cve.get("cve").get("problemtype").get("problemtype_data")[0].get("description")[0].get("value")
                         else:
-
+                            
                             cvss_base = None
+                            cvss_severity = None
                             cvss_impact = None
                             cvss_exploit = None
                             cvss_access_vector = None
@@ -127,6 +129,7 @@ def parse_json():
                         "last_modified_date": last_mod_date,
                         "summary": summary,
                         "cvss_base": cvss_base,
+                        'cvss_severity': cvss_severity,
                         "cvss_impact": cvss_impact,
                         "cvss_exploit": cvss_exploit,
                         "cvss_access_vector": cvss_access_vector,
