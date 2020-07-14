@@ -17,18 +17,35 @@ Why does this file exist, and why not put this in __main__?
 import click
 from download_files import download_files
 from unzip import *
+import os
+from pathlib import Path
+import sys
+from streamlit import cli as stcli
+
+
+def run_streamlit():
+    dirname = Path(os.path.dirname(__file__)).parent
+    filename = os.path.join(dirname, 'app.py')
+    sys.argv = ["streamlit", "run", filename]
+    sys.exit(stcli.main())
 
 
 @click.command()
-@click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder. You can also write "cve csv" or "cpe csv" to place the data in a csv file')
-def main(download):
-    if download[1] != 'csv':
+@click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder')
+@click.option('-r', '--run', type=str, help='Runs the visualizer')
+@click.option('-c', '--csv', type=str, help='Makes a csv file for CVE or CPE')
+def main(download, run, csv):
+    if download:
         download_files(download[0], download[1])
-    
-    if download[0] == 'cve' and download[1] == 'csv':
-        make_cve_csv()
-        print('Added cve')
-    elif download[0] == 'cpe' and download[1] == 'csv':
-        make_cpe_csv()
-        print('Added cpe')
-
+    if run:
+        if run == 'visualizer':
+            run_streamlit()
+        else:
+            click.echo('Invalid option. Try visualizer.')
+    if csv:
+        if csv == 'cve':
+            make_cve_csv()
+            print('Added cve.csv')
+        elif csv == 'cpe':
+            make_cpe_csv()
+            print('Added cpe.csv')

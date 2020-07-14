@@ -4,11 +4,15 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime as dt
+import os.path
 import json
 
 
 def main():
-    cves_large = get_data()
+    if os.path.isfile('cve.csv'):
+        cves_large = get_data('cve.csv')
+    else:
+        cves_large = get_data('cve_sample.csv')
     cves = cves_large.loc[~cves_large['cve_id'].duplicated(keep='first')]
 
     st.title('Welcome to the Fidelio Visualizer')
@@ -82,20 +86,39 @@ def draw_graph4(data):
     cves = data
 
     display, select = select_option('graph4')
-    first_value = [cves[f'{display}'].value_counts().iloc[0]]
-    second_value = [cves[f'{display}'].value_counts().iloc[1]]
-    third_value  = [cves[f'{display}'].value_counts().iloc[2]]
+    value = cves[f'{display}'].value_counts()
+    try:
+        first_value = [value.iloc[0]]
+        first_value_index = value.index[0]
+    except IndexError:
+        first_value = [0]
+        first_value_index = 'Value is 0'
+    try:
+        second_value = [value.iloc[1]]
+        second_value_index = value.index[1]
+    except IndexError:
+        second_value = [0]
+        second_value_index = 'Value is 0'
+    try:
+        third_value  = [cves[f'{display}'].value_counts().iloc[2]]
+        third_value_index = value.index[2]
+    except IndexError:
+        third_value = [0]
+        third_value_index = "Value is 0"
     # st.write(cves[f'{display}'].value_counts())
 
-    fig = go.Figure(data=[
-    go.Bar(name=cves[f'{display}'].value_counts().index[0], y=first_value, hoverinfo='y+name', text=first_value),
-    go.Bar(name=cves[f'{display}'].value_counts().index[1], y=second_value, hoverinfo='y+name', text=second_value),
-    go.Bar(name=cves[f'{display}'].value_counts().index[2], y=third_value, hoverinfo='y+name', text=third_value)
-    ])
-    fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select}')
-    fig.update_traces(textposition='outside', hoverinfo='y+name')
-    fig.update_xaxes(showticklabels=False)
-    st.plotly_chart(fig)
+    try:
+        fig = go.Figure(data=[
+        go.Bar(name=first_value_index, y=first_value, hoverinfo='y+name', text=first_value),
+        go.Bar(name=second_value_index, y=second_value, hoverinfo='y+name', text=second_value),
+        go.Bar(name=third_value_index, y=third_value, hoverinfo='y+name', text=third_value)
+        ])
+        fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select}')
+        fig.update_traces(textposition='outside', hoverinfo='y+name')
+        fig.update_xaxes(showticklabels=False)
+        st.plotly_chart(fig)
+    except IndexError:
+        st.error('There is not enough data to make this graph')
 
 def draw_graph3(data):
     cves = data
@@ -169,15 +192,18 @@ def draw_graph1(data):
         second_list.append(second_value)
         third_list.append(third_value)
 
-    fig = go.Figure(data=[
-    go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[0], x=years, y=first_list, text=first_list),
-    go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[1], x=years, y=second_list, text=second_list),
-    go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[2], x=years, y=third_list, text=third_list)
-    ])
-    fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select} by year',
-                    uniformtext_minsize=8, uniformtext_mode='hide')
-    fig.update_traces(textposition='outside', hoverinfo='y+name')
-    st.plotly_chart(fig)
+    try:
+        fig = go.Figure(data=[
+        go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[0], x=years, y=first_list, text=first_list),
+        go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[1], x=years, y=second_list, text=second_list),
+        go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[2], x=years, y=third_list, text=third_list)
+        ])
+        fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select} by year',
+                        uniformtext_minsize=8, uniformtext_mode='hide')
+        fig.update_traces(textposition='outside', hoverinfo='y+name')
+        st.plotly_chart(fig)
+    except IndexError:
+        st.error('There is not enough data to make this graph')
 
 
 def select_option(key):
@@ -203,8 +229,8 @@ def select_option(key):
     return display, select
 
 @st.cache
-def get_data():
-    df = pd.read_csv('../cve.csv', parse_dates=['published_date'])
+def get_data(file):
+    df = pd.read_csv(file, parse_dates=['published_date'])
     return df
 
 
