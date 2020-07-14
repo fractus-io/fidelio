@@ -11,6 +11,11 @@ Installation
 
     pip install -i https://test.pypi.org/simple/ fidelio
 
+If you install fidelio from project folder then run
+::
+
+    pip install -e .
+
 Fidelio is not yet available on pypi, but on TestPyPi.
 
 To check if the package has been successfully installed run:
