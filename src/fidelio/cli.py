@@ -34,6 +34,7 @@ def run_streamlit():
 @click.option('-d', '--download', nargs=2, help='Downloads CVE or CPE files and putes them in a folder')
 @click.option('-r', '--run', type=str, help='Runs the visualizer')
 @click.option('-c', '--csv', type=str, help='Makes a csv file for CVE or CPE')
+@click.version_option()
 def main(download, run, csv):
     if download:
         download_files(download[0], download[1])

@@ -14,7 +14,7 @@ def main():
     else:
         cves_large = get_data('cve_sample.csv')
     cves = cves_large.loc[~cves_large['cve_id'].duplicated(keep='first')]
-
+    
     st.title('Welcome to the Fidelio Visualizer')
     st.write('A Streamlit Application used for the visualization of Common Vulnerabilities and Exposures.')
     #st.write(cves.head())
