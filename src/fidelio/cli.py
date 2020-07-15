@@ -16,11 +16,11 @@ Why does this file exist, and why not put this in __main__?
 """
 import click
 from download_files import download_files
-from unzip import *
-import os
+from unzip import make_cve_csv, make_cpe_csv
+from streamlit import cli as stcli
 from pathlib import Path
 import sys
-from streamlit import cli as stcli
+import os
 
 
 def run_streamlit():

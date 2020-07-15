@@ -5,7 +5,7 @@ from lxml import etree
 from datetime import datetime
 import csv
 import json
-import pprint
+
 
 def getList(list):
      return list[0].keys() 
@@ -24,8 +24,6 @@ def parse_json():
     files = [f for f in listdir("nvd/") if isfile(join("nvd/", f))]
     files.sort()
     # print(files)
-
-    num = 0
 
     for file in files:
         # print(join("nvd/", file))

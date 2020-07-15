@@ -6,7 +6,7 @@ import plotly.express as px
 import datetime as dt
 import os.path
 import json
-
+import csv
 
 def main():
     if os.path.isfile('cve.csv'):
@@ -14,10 +14,12 @@ def main():
     else:
         cves_large = get_data('cve_sample.csv')
     cves = cves_large.loc[~cves_large['cve_id'].duplicated(keep='first')]
+    #st.write(cves_large.head(20))
     
     st.title('Welcome to the Fidelio Visualizer')
     st.write('A Streamlit Application used for the visualization of Common Vulnerabilities and Exposures.')
     #st.write(cves.head())
+    
     draw_graph6(cves)
     draw_graph1(cves)
     draw_graph4(cves)
@@ -31,7 +33,7 @@ def draw_graph6(data):
     select = st.sidebar.selectbox('Time options', ['Last week', 'Last 30 days', 'Last 90 days', 'Last year', 'All time'])
 
     dates = cves['published_date'].dt.date.sort_values().unique()
-
+    
     if select == 'Last week':
         from_value = dates[-1] - dt.timedelta(days=6)
         to_value = dates[-1]
@@ -173,6 +175,8 @@ def draw_graph1(data):
     second_list = []
     third_list = []
 
+    bar_mode = 'group' if len(years) < 6 else 'stack'
+
     for year in years:
         # st.write(cves[f'{display}'].loc[cves['published_date'].dt.year == year].value_counts())
         try:
@@ -198,7 +202,7 @@ def draw_graph1(data):
         go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[1], x=years, y=second_list, text=second_list),
         go.Bar(name=cves[f'{display}'].value_counts().sort_index(ascending=False).index[2], x=years, y=third_list, text=third_list)
         ])
-        fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select} by year',
+        fig.update_layout(barmode=bar_mode, height=475, title=f'Total number of Vulnerabilities by {select} by year',
                         uniformtext_minsize=8, uniformtext_mode='hide')
         fig.update_traces(textposition='outside', hoverinfo='y+name')
         st.plotly_chart(fig)
@@ -229,8 +233,8 @@ def select_option(key):
     return display, select
 
 @st.cache
-def get_data(file):
-    df = pd.read_csv(file, parse_dates=['published_date'])
+def get_data(csv_file):
+    df = pd.read_csv(csv_file, parse_dates=['published_date'])
     return df
 
 

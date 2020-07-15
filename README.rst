@@ -74,6 +74,9 @@ but they are not implemented in the Fidelio Visualizer:
 
 CPEs are all stored in one file so they cannot be downloaded based on year.
 
+If you ever want to update your data use:
+::
+    fidelio -d cve update
 
 Csv Converter
 -------------
