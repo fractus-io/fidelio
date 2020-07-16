@@ -23,6 +23,7 @@ import sys
 import os
 
 
+# Runs the command "streamlit run app.py"
 def run_streamlit():
     dirname = Path(os.path.dirname(__file__)).parent
     filename = os.path.join(dirname, 'app.py')

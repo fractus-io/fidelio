@@ -8,7 +8,8 @@ import json
 
 
 def getList(list):
-     return list[0].keys() 
+    return list[0].keys()
+
 
 def check_empty(val):
     return None if val == "*" else val
@@ -17,10 +18,11 @@ def check_empty(val):
 def check_len(val):
     return [None, val] if len(val.split(" ")) > 1 else [val, None]
 
-# unzips CVEs and returns a list with information
+
+# Parses the downloaded cve files and returns a list of CVEs
 def parse_json():
-    
-    cve_list = []    
+
+    cve_list = []
     files = [f for f in listdir("nvd/") if isfile(join("nvd/", f))]
     files.sort()
     # print(files)
@@ -42,23 +44,23 @@ def parse_json():
 
                 if 'REJECT' in summary:
                     continue
-                
+
                 if cpe_nodes == []:
                     cpe_list = ['none']
 
                 for node in cpe_nodes:
                     cpe_children = node.get('children')
-                    
-                    if cpe_children == None:
+
+                    if cpe_children is None:
                         cpe_list.append(node.get('cpe_match'))
                     else:
                         for child in cpe_children:
                             cpe_list.append(child.get('cpe_match'))
-                    if cpe_children == None and (node.get('cpe_match')) == None:
+                    if cpe_children is None and (node.get('cpe_match')) is None:
                         cpe_list = ['none']
 
             except TypeError as e:
-                print(e)        
+                print(e)
                 print(cve_id)
 
             for ls in cpe_list:
@@ -77,12 +79,11 @@ def parse_json():
                                 cpe_version = None
                             else:
                                 cpe_version = cpe_item[5]
-                            
+
                         last_mod_date = datetime.strptime(cve.get("lastModifiedDate"), "%Y-%m-%dT%H:%MZ")
                         pub_date = datetime.strptime(cve.get("publishedDate"), "%Y-%m-%dT%H:%MZ")
                         summary = cve.get("cve").get("description").get("description_data")[0].get("value")
                         impact = cve.get("impact")
-
 
                         if impact != {}:
                             baseMetricV2 = impact.get("baseMetricV2")
@@ -100,7 +101,7 @@ def parse_json():
                             cvss_vector = baseMetricV2.get("cvssV2").get("vectorString")
                             cwe_id = cve.get("cve").get("problemtype").get("problemtype_data")[0].get("description")[0].get("value")
                         else:
-                            
+
                             cvss_base = None
                             cvss_severity = None
                             cvss_impact = None
@@ -144,10 +145,11 @@ def parse_json():
                     }
                     cve_list.append(cve_info)
     jsonfile.close()
-    
+
     return cve_list
 
 
+# Parses the cpe file and returns a list of CPEs
 def parse_xml():
     file = ZipFile('cpe/official-cpe-dictionary_v2.3.xml.zip')
     root = etree.parse(file.open(file.namelist()[0])).getroot()
@@ -219,10 +221,13 @@ def parse_xml():
         "vendors": list(vendors),
         "products": list(products),
     }
+
+
 # This will later be replaced with db comunication
+# This will make a .csv file with the cpe data
 def make_cpe_csv():
     cpe_object = parse_xml()
-    
+
     cpes = cpe_object['cpes']
     print(cpes[27])
     try:
@@ -233,14 +238,13 @@ def make_cpe_csv():
                 writer.writerow(data)
     except IOError:
         print("I/O error")
-        
-    # vendors = cpe_object['vendors']
-    # products = cpe_object['products']
+
 
 # This will later be replaced with db comunication
+# This will make a .csv file the cve data
 def make_cve_csv():
     if exists('cve.csv'):
-        remove('cve.csv') 
+        remove('cve.csv')
 
     cves = parse_json()
 
