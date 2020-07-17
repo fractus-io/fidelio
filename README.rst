@@ -9,7 +9,7 @@ Installation
 
 ::
 
-    pip install -i https://test.pypi.org/simple/ fidelio
+    pip install fidelio
 
 If you install fidelio from project folder then run
 ::
