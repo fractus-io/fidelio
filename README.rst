@@ -79,7 +79,7 @@ If you ever want to update your data use:
 
     fidelio -d cve update
 
-or
+or:
 ::
 
     fidelio -d cpe update
