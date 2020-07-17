@@ -74,8 +74,10 @@ setup(
     install_requires=[
         'click',
         'streamlit',
-	'lxml',
-	'plotly'
+        'lxml',
+        'plotly',
+        'sqlalchemy',
+        'psycopg2-binary'
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     extras_require={

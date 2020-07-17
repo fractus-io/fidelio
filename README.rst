@@ -107,7 +107,9 @@ The command for converting CPEs to .csv is:
 Fidelio Visualizer
 ------------------
 
-This feature will run a Streamlit app in your browser. By default it will display the data contained in the cve_sample file.
+This feature will run a Streamlit app in your browser.It connects to a database and displays the data in that database.
+If you would like to use your csv files instead there is button in the visualizer to use the csv files.
+By default it will display the data contained in the cve_sample file.
 If a .csv is created with the Csv Converter it will automatically switch to the converted file.
 
 To run the Fidelio Visualizer use the command:

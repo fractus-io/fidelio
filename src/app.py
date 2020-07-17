@@ -3,29 +3,46 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime as dt
-import os.path
+from os.path import isfile
+from sqlalchemy import create_engine
+import psycopg2
+import os
 
 
 def main():
-    if os.path.isfile('cve.csv'):
-        cves_large = get_data('cve.csv')
+
+    csv_check = st.sidebar.checkbox('Use your csv files')
+
+    if csv_check:
+        if isfile('cve.csv'):
+            cpes = get_csv('cve.csv')
+        else:
+            cpes = get_csv('cve_sample.csv')
+        cves = cpes.loc[~cpes['cve_id'].duplicated(keep='first')]
+        # st.write(cves.head(20))
+
     else:
-        cves_large = get_data('cve_sample.csv')
-    cves = cves_large.loc[~cves_large['cve_id'].duplicated(keep='first')]
-    # st.write(cves.head(20))
+        cves = get_data('CVE')
+        cpes = get_data('CPE')
 
     st.title('Welcome to the Fidelio Visualizer')
     st.write('A Streamlit Application used for the visualization of Common Vulnerabilities and Exposures.')
 
-    draw_graph6(cves)
-    draw_graph1(cves)
-    draw_graph4(cves)
-    draw_graph3(cves)
-    draw_graph2(cves_large)
-    draw_graph5(cves_large)
+    # st.dataframe(cpes['vendor_id'].value_counts().index)
+
+    cve_number_time(cves)
+    cve_number_year(cves)
+    cve_number(cves)
+    cve_scores(cves)
+    if csv_check:
+        cpe_number_product_csv(cpes)
+        cpe_number_vendor_csv(cpes)
+    else:
+        cpe_number_product(cpes)
+        cpe_number_vendor(cpes)
 
 
-def draw_graph6(data):
+def cve_number_time(data):
     cves = data
     select = st.sidebar.selectbox('Time options', ['Last week', 'Last 30 days', 'Last 90 days', 'Last year', 'All time'])
 
@@ -64,7 +81,28 @@ def draw_graph6(data):
         st.error('Please select a date range.')
 
 
-def draw_graph5(data):
+def cpe_number_product(data):
+    cpes = data
+
+    display = st.sidebar.slider('Number of Products', 1, 25, 10)
+
+    vendors = cpes['product_id'].value_counts()
+    vendor_names = get_data('product')
+
+    vendor_names_list = vendor_names[vendor_names['id'].isin(vendors.iloc[:display].index)]
+    vendor_names_list.set_index(vendor_names_list['id'], inplace=True)
+    vendor_names_list['count'] = vendors.iloc[:display]
+    vendor_names_list.sort_values('count', ascending=False, inplace=True)
+
+    fig = px.bar(vendor_names_list, x='count', y='name',
+                 labels={'count': 'Number of CVEs', 'name': 'Product'}, text='count')
+    fig.update_traces(texttemplate='%{text:.2s}', textposition='outside',
+                      hovertemplate='%{x} <extra></extra>')
+    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', title='Total Number of Vulnerabilities by Product')
+    st.plotly_chart(fig)
+
+
+def cpe_number_product_csv(data):
     cves = data
 
     display = st.sidebar.slider('Number of Products', 1, 25, 10)
@@ -82,7 +120,7 @@ def draw_graph5(data):
     st.plotly_chart(fig)
 
 
-def draw_graph4(data):
+def cve_number(data):
     cves = data
 
     display, select = select_option('graph4')
@@ -117,12 +155,24 @@ def draw_graph4(data):
         fig.update_layout(barmode='group', height=475, title=f'Total number of Vulnerabilities by {select}')
         fig.update_traces(textposition='outside', hoverinfo='y+name')
         fig.update_xaxes(showticklabels=False)
+
         st.plotly_chart(fig)
+        cve_number_pie(cves, display)
+
     except IndexError:
         st.error('There is not enough data to make this graph')
 
 
-def draw_graph3(data):
+def cve_number_pie(data, display):
+    cves = data
+
+    fig = go.Figure(data=[go.Pie(
+        labels=cves[f'{display}'].value_counts().index,
+        values=cves[f'{display}'].value_counts())])
+    st.plotly_chart(fig)
+
+
+def cve_scores(data):
     cves = data
 
     select = st.selectbox('Select what to display', ['Base Score', 'Impact Score', 'Exploit Score'])
@@ -148,7 +198,28 @@ def draw_graph3(data):
     st.plotly_chart(fig)
 
 
-def draw_graph2(data):
+def cpe_number_vendor(data):
+    cpes = data
+
+    display = st.sidebar.slider('Number of Vendors', 1, 25, 10)
+
+    vendors = cpes['vendor_id'].value_counts()
+    vendor_names = get_data('vendor')
+
+    vendor_names_list = vendor_names[vendor_names['id'].isin(vendors.iloc[:display].index)]
+    vendor_names_list.set_index(vendor_names_list['id'], inplace=True)
+    vendor_names_list['count'] = vendors.iloc[:display]
+    vendor_names_list.sort_values('count', ascending=False, inplace=True)
+
+    fig = px.bar(vendor_names_list, x='count', y='name',
+                 labels={'count': 'Number of CVEs', 'name': 'Vendor'}, text='count')
+    fig.update_traces(texttemplate='%{text:.2s}', textposition='outside',
+                      hovertemplate='%{x} <extra></extra>')
+    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', title='Total Number of Vulnerabilities by Vendor')
+    st.plotly_chart(fig)
+
+
+def cpe_number_vendor_csv(data):
     cves = data
 
     display = st.sidebar.slider('Number of Vendors', 1, 25, 10)
@@ -166,7 +237,7 @@ def draw_graph2(data):
     st.plotly_chart(fig)
 
 
-def draw_graph1(data):
+def cve_number_year(data):
     cves = data
 
     display, select = select_option('graph1')
@@ -211,14 +282,12 @@ def draw_graph1(data):
 
 
 def select_option(key):
-    select = st.selectbox('Select what to display', ['Severity',
+    select = st.selectbox('Select what to display', [  # 'Severity',
                           'Access Complexity', 'Access Vector',
                           'Access Authentication', 'Confidentiality Impact',
                           'Integrity Impact', 'Availability Impact'], key=key)
 
-    if select == 'Severity':
-        display = 'cvss_severity'
-    elif select == 'Access Complexity':
+    if select == 'Access Complexity':
         display = 'cvss_access_complexity'
     elif select == 'Access Vector':
         display = 'cvss_access_vector'
@@ -230,12 +299,20 @@ def select_option(key):
         display = 'cvss_integrity_impact'
     elif select == 'Availability Impact':
         display = 'cvss_availability_impact'
-
+    # elif select == 'Severity':
+    #     display = 'cvss_severity'
     return display, select
 
 
 @st.cache
-def get_data(csv_file):
+def get_data(table):
+    engine = create_engine(f'postgresql://{os.environ.get("FIDELIO_USER")}:{os.environ.get("FIDELIO_PASS")}@46.101.210.113/fidelio')
+    df = pd.read_sql(f'{table}', engine)
+    return df
+
+
+@st.cache
+def get_csv(csv_file):
     df = pd.read_csv(csv_file, parse_dates=['published_date'])
     return df
 
