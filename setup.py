@@ -25,11 +25,7 @@ def read(*names, **kwargs):
 
 setup(
     name='fidelio',
-    use_scm_version={
-        'local_scheme': 'dirty-tag',
-        'write_to': 'src/fidelio/_version.py',
-        'fallback_version': '0.0.1',
-    },
+    version='0.1',
     description='An application for downloading and displaying Common Vulnerabilities and Exposures (CVE) from the National Vulnerabilities Database (NVD)',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
